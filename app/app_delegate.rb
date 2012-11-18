@@ -5,7 +5,6 @@ class AppDelegate
     window.makeKeyAndVisible
     window.rootViewController.wantsFullScreenLayout = true
 
-    Api::SampleClient.clearToken
     App.notification_center.addObserver(
       self,
       selector: 'forceAuthentication',
@@ -18,7 +17,6 @@ class AppDelegate
   def forceAuthentication
     Api::SampleClient.clearToken
     appNavigationController.presentViewController(loginViewController, animated: true, completion: nil)
-    # appNavigationController.pushViewController(loginViewController, animated: true)
   end
 
   def window

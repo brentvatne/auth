@@ -2,14 +2,29 @@ class DoStuffViewController < UIViewController
 
   def init; self; end
 
+  def title
+    'Sample Authentication App'
+  end
+
+  def viewDidAppear(animated)
+    if Api::SampleClient.authenticated?
+      logoutButton.enabled = true
+    else
+      logoutButton.enabled = false
+    end
+  end
+
   def viewDidLoad
     super
 
     self.view.backgroundColor = UIColor.whiteColor
     view.addSubview(getDataButton)
+    view.addSubview(logoutButton)
     view.addSubview(backgroundLabel)
     view.addSubview(contentLabel)
+
     watchForGetDataPress
+    watchForLogoutPress
   end
 
   def watchForGetDataPress
@@ -21,6 +36,13 @@ class DoStuffViewController < UIViewController
           contentLabel.text = result
         end
       end
+    end
+  end
+
+  def watchForLogoutPress
+    logoutButton.when(UIControlEventTouchUpInside) do
+      logoutButton.enabled = false
+      Api::SampleClient.clearToken
     end
   end
 
@@ -50,7 +72,17 @@ class DoStuffViewController < UIViewController
       _button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
       _button.setTitle("Get some data!", forState:UIControlStateNormal)
       _button.sizeToFit
-      _button.frame = [[10, 17], [300, 30]]
+      _button.frame = [[10, 17], [145, 30]]
+      _button
+    end
+  end
+
+  def logoutButton
+    @logoutButton ||= begin
+      _button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+      _button.setTitle("Log out", forState:UIControlStateNormal)
+      _button.sizeToFit
+      _button.frame = [[165, 17], [145, 30]]
       _button
     end
   end
