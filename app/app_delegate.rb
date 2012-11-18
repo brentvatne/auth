@@ -10,6 +10,7 @@ class AppDelegate
     window.makeKeyAndVisible
     window.rootViewController.wantsFullScreenLayout = true
 
+    Api::SampleClient.clearToken
     App.notification_center.addObserver(
       self,
       selector: 'forceAuthentication',

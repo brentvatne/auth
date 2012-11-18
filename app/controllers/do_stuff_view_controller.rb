@@ -14,11 +14,15 @@ class DoStuffViewController < UIViewController
 
   def watchForGetDataPress
     getDataButton.when(UIControlEventTouchUpInside) do
+      getDataButton.enabled = false
       Api::SampleClient.fetchIndex do |success, result|
-        contentLabel.text = result
-        contentLabel.lineBreakMode = UILineBreakModeWordWrap
-        contentLabel.font = UIFont.fontWithName('Arial', size:11)
-        contentLabel.numberOfLines = 0
+        getDataButton.enabled = true
+        if success
+          contentLabel.text = result
+          contentLabel.lineBreakMode = UILineBreakModeWordWrap
+          contentLabel.font = UIFont.fontWithName('Arial', size:11)
+          contentLabel.numberOfLines = 0
+        end
       end
     end
   end
@@ -46,7 +50,7 @@ class DoStuffViewController < UIViewController
       _button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
       _button.setTitle("Get some data!", forState:UIControlStateNormal)
       _button.sizeToFit
-      _button.frame = [[10, 20], [300, 30]]
+      _button.frame = [[10, 17], [300, 30]]
       _button
     end
   end

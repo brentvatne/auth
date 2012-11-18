@@ -53,7 +53,7 @@ module Api
       end
 
       def getWithToken(path, &block)
-        forceAuthentication unless authenticated?
+        return forceAuthentication unless authenticated?
 
         options = {headers: {'auth_token' => token}}
         BW::HTTP.get(path, options) do |response|
