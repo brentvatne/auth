@@ -3,7 +3,6 @@ class LoginViewController < UIViewController
   def init; self; end
 
   # def presentModallyFromViewController(viewController)
-
   # end
 
   def viewDidLoad
@@ -21,7 +20,18 @@ class LoginViewController < UIViewController
   def watchForSubmit
     submitButton.when(UIControlEventTouchUpInside) do
       disableForm
+      Api::SampleClient.authenticate(login, password) do |success, response|
+        $stdout.puts 'success!'
+      end
     end
+  end
+
+  def login
+    loginField.text
+  end
+
+  def password
+    passwordField.text
   end
 
   def disableForm
@@ -51,9 +61,6 @@ class LoginViewController < UIViewController
   def textColor
     '#6f7073'.to_color
   end
-
-
-  # x y width height
 
   def loginLabel
     @loginLabel ||= begin
