@@ -22,7 +22,8 @@ class AppDelegate
 
   def forceAuthentication
     Api::SampleClient.clearToken
-    appNavigationController.pushViewController(loginViewController, animated: true)
+    appNavigationController.presentViewController(loginViewController, animated: true, completion: nil)
+    # appNavigationController.pushViewController(loginViewController, animated: true)
   end
 
   def window

@@ -20,7 +20,6 @@ module Api
           if response.ok?
             parsedResponse = BW::JSON.parse(response.body.to_str)
             saveNewToken(parsedResponse[:auth_token])
-            $stdout.puts parsedResponse
             block.call(true, parsedResponse)
           elsif response.status_code.to_s =~ /40\d/
             App.alert("Invalid credentials")
@@ -34,13 +33,32 @@ module Api
 
       def fetchIndex(&block)
         getWithToken(indexPath) do |response|
-          if response.ok?
-            parsedResponse = BW::JSON.parse(response.body.to_str)
+          if response.respond_to?(:never_requested?) && response.never_requested?
+            block.call(false, 'Not authenticated')
+          elsif response.ok?
             block.call(true, response.body.to_str)
           elsif response.status_description == 'unauthorized'
             forceAuthentication
-            block.call(false, 'Something went wrong')
+            block.call(false, 'Token expired')
           end
+        end
+      end
+
+      def getWithToken(path, &block)
+        if ! authenticated?
+          block.call(NoRequestSent.new)
+          return forceAuthentication
+        end
+
+        options = {headers: {'auth_token' => token}}
+        BW::HTTP.get(path, options) do |response|
+          block.call(response)
+        end
+      end
+
+      class NoRequestSent
+        def never_requested?
+          true
         end
       end
 
@@ -50,15 +68,6 @@ module Api
 
       def authenticationPath
         "#{baseUrl}/auth/login.json"
-      end
-
-      def getWithToken(path, &block)
-        return forceAuthentication unless authenticated?
-
-        options = {headers: {'auth_token' => token}}
-        BW::HTTP.get(path, options) do |response|
-          block.call(response)
-        end
       end
 
       def indexPath

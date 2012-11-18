@@ -2,8 +2,8 @@ class LoginViewController < UIViewController
 
   def init; self; end
 
-  # def presentModallyFromViewController(viewController)
-  # end
+  def self.presentModallyFromViewController(viewController)
+  end
 
   def viewDidLoad
     super
@@ -21,7 +21,9 @@ class LoginViewController < UIViewController
     submitButton.when(UIControlEventTouchUpInside) do
       disableForm
       Api::SampleClient.authenticate(login, password) do |success, response|
-        $stdout.puts 'success!'
+        if success
+          dismissViewControllerAnimated(true, completion: nil)
+        end
       end
     end
   end

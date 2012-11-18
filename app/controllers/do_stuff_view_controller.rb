@@ -19,9 +19,6 @@ class DoStuffViewController < UIViewController
         getDataButton.enabled = true
         if success
           contentLabel.text = result
-          contentLabel.lineBreakMode = UILineBreakModeWordWrap
-          contentLabel.font = UIFont.fontWithName('Arial', size:11)
-          contentLabel.numberOfLines = 0
         end
       end
     end
@@ -41,6 +38,9 @@ class DoStuffViewController < UIViewController
       _label.backgroundColor = 'black'.to_color
       _label.textColor = 'white'.to_color
       _label.text = "..."
+      _label.lineBreakMode = UILineBreakModeWordWrap
+      _label.font = UIFont.fontWithName('Arial', size:11)
+      _label.numberOfLines = 0
       _label
     end
   end
