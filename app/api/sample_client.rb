@@ -13,7 +13,7 @@ module Api
       #   "auth_token"            => "1b9fabe2b36e81a6c7a6991a0353fe5355ec13f7",
       #   "email"                 => "admin4@example.com" }
       #
-      def self.authenticate(login, password, &block)
+      def authenticate(login, password, &block)
         payload = {payload: {username: login, password: password}}
 
         BW::HTTP.post(authenticationPath, payload) do |response|
@@ -32,16 +32,49 @@ module Api
         end
       end
 
+      def fetchIndex(&block)
+        getWithToken(indexPath) do |response|
+          if response.ok?
+            parsedResponse = BW::JSON.parse(response.body.to_str)
+            block.call(true, response.body.to_str)
+          elsif response.status_description == 'unauthorized'
+            forceAuthentication
+            block.call(false, 'Something went wrong')
+          end
+        end
+      end
+
+      def authenticated?
+        !!token
+      end
+
       def authenticationPath
         "#{baseUrl}/auth/login.json"
       end
 
+      def getWithToken(path, &block)
+        forceAuthentication unless authenticated?
+
+        options = {headers: {'auth_token' => token}}
+        BW::HTTP.get(path, options) do |response|
+          block.call(response)
+        end
+      end
+
       def indexPath
-        # add auth_token header
+        "#{baseUrl}/home/index.json"
+      end
+
+      def forceAuthentication
+        App.notification_center.post 'UnauthorizedRequest'
       end
 
       def token
         App::Persistence['SampleToken']
+      end
+
+      def clearToken
+        App::Persistence['SampleToken'] = nil
       end
 
       def saveNewToken(token)
@@ -50,4 +83,3 @@ module Api
     end
   end
 end
-

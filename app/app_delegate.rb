@@ -9,7 +9,19 @@ class AppDelegate
     window.rootViewController = appNavigationController
     window.makeKeyAndVisible
     window.rootViewController.wantsFullScreenLayout = true
+
+    App.notification_center.addObserver(
+      self,
+      selector: 'forceAuthentication',
+      name:     'UnauthorizedRequest',
+      object: nil
+    )
     true
+  end
+
+  def forceAuthentication
+    Api::SampleClient.clearToken
+    appNavigationController.pushViewController(loginViewController, animated: true)
   end
 
   def window

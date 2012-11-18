@@ -14,8 +14,12 @@ class DoStuffViewController < UIViewController
 
   def watchForGetDataPress
     getDataButton.when(UIControlEventTouchUpInside) do
-      contentLabel.text = Api::SampleClient.token
-      contentLabel.sizeToFit
+      Api::SampleClient.fetchIndex do |success, result|
+        contentLabel.text = result
+        contentLabel.lineBreakMode = UILineBreakModeWordWrap
+        contentLabel.font = UIFont.fontWithName('Arial', size:11)
+        contentLabel.numberOfLines = 0
+      end
     end
   end
 
@@ -33,7 +37,6 @@ class DoStuffViewController < UIViewController
       _label.backgroundColor = 'black'.to_color
       _label.textColor = 'white'.to_color
       _label.text = "..."
-      _label.sizeToFit
       _label
     end
   end
