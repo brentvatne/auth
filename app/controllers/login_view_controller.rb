@@ -24,6 +24,7 @@ class LoginViewController < UIViewController
         if success
           dismissViewControllerAnimated(true, completion: nil)
         end
+        enableForm
       end
     end
   end

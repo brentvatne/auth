@@ -1,10 +1,5 @@
 class AppDelegate
 
-  # show the do stuff view
-  # when you click something, check if authenticated
-  # if not, send notification and do nothing
-  # app delegate watch for notification and force authentication
-
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     window.rootViewController = appNavigationController
     window.makeKeyAndVisible

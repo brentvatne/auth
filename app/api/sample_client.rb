@@ -14,31 +14,36 @@ module Api
       #   "email"                 => "admin4@example.com" }
       #
       def authenticate(login, password, &block)
-        payload = {payload: {username: login, password: password}}
+        SVProgressHUD.show
 
+        payload = {payload: {username: login, password: password}}
         BW::HTTP.post(authenticationPath, payload) do |response|
           if response.ok?
+            SVProgressHUD.showSuccessWithStatus('Logged in')
             parsedResponse = BW::JSON.parse(response.body.to_str)
             saveNewToken(parsedResponse[:auth_token])
             block.call(true, parsedResponse)
-          elsif response.status_code.to_s =~ /40\d/
-            App.alert("Invalid credentials")
-            block.call(false, nil)
           else
-            App.alert("Server error")
-            block.call(false, nil)
+            error = 'Invalid credentials'
+            SVProgressHUD.showErrorWithStatus(error)
+            block.call(false, error)
           end
         end
       end
 
       def fetchIndex(&block)
+        SVProgressHUD.show
+
         getWithToken(indexPath) do |response|
           if response.respond_to?(:never_requested?) && response.never_requested?
+            SVProgressHUD.dismiss
             block.call(false, 'Not authenticated')
           elsif response.ok?
+            SVProgressHUD.dismiss
             block.call(true, response.body.to_str)
           elsif response.status_description == 'unauthorized'
             forceAuthentication
+            SVProgressHUD.showErrorWithStatus('Your session has expired, please login again')
             block.call(false, 'Token expired')
           end
         end
